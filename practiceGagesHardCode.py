@@ -117,7 +117,7 @@ def stringToArrList(list):
 	return newList
 
 """ Create the list of data, create the list of dates """
-timeseries = "C:/Users/Andreas/Documents/SDSC/Python/PracticeTimeseries/practiceGages" #location of practiceGages (change after download)
+timeseries = "./practiceGages" #location of practiceGages (change after download)
 gage_list = gageList(timeseries)
 gage_values = timeSeriesList(timeseries)
 big_list = bigList(gage_list, gage_values)

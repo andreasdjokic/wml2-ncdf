@@ -13,6 +13,7 @@
 from netCDF4 import Dataset, date2num, stringtochar, stringtoarr
 import numpy as np 
 from datetime import timedelta, datetime
+from random import randrange
 
 root_grp = Dataset('test3.nc', 'w', format='NETCDF4')
 root_grp.description = 'Example temperature data'
@@ -47,16 +48,22 @@ try:
     root_grp.stationDimension = "station_nm";
     root_grp.featureType = "TimeSeries";
     root_grp.conventions= "CF-1.6";
+    baseDate = datetime(2001,3,1)
+    root_grp.time_coverage_start = "2001-03-01 12:00:00";
+
     # dimensions
     root_grp.createDimension('time', None)
     root_grp.createDimension('station_nm', None) # stations unlimited = http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#idp8314368
     # variables
     times = root_grp.createVariable('time', 'f8', ('time',))
-    times.units = 'hours since 0001-01-01 00:00:00.0'
+    times.units = 'hours since 2001-03-01 12:00:00'
+    #times.units = 'hours since 0001-01-01 00:00:00.0'
     times.calendar = 'gregorian'
     times.standard_name= 'time'
     data = root_grp.createVariable('data', 'f4', ('station_nm','time',))
     data.coordinates='time lat lon'
+    data.long_name = "Streamflow"
+    data.units = "ft^3 / sec"
     stations = root_grp.createVariable('stations', 'c', ('station_nm','time',))
     stations.units=""
     stations.standard_name= 'station_id'
@@ -71,6 +78,7 @@ try:
     
     # Fill in the individual data for each point (lat, lon, station name
     dates = [datetime(2001,3,1)+n*timedelta(hours=12) for n in range(12)]
+    #dates = [n*timedelta(hours=12) for n in range(12)]
     times[:]= date2num(dates,units=times.units,calendar=times.calendar)
     
     # Run under assumption all station names are equal in length; otherwise will get error: "ValueError: cannot set an array element with a sequence"
@@ -87,7 +95,8 @@ try:
 
     # Fill with data given
     for i in range(len(stations)):
-       data[i,:] = data_values[i]
+        for n in range (12):
+         data[i, n:] = data_values[randrange(1,12)]
     
     # group
     # my_grp = root_grp.createGroup('my_group')
